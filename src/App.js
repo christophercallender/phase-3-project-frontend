@@ -102,7 +102,8 @@ export default function App() {
               : todo
           )
         )
-      );
+      )
+      .then(() => setRerender(!rerender));
   }
 
   function handleChangeCategory(id, category) {
@@ -127,7 +128,8 @@ export default function App() {
               : todo
           )
         )
-      );
+      )
+      .then(() => setRerender(!rerender));
   }
 
   function handleChangeDate(id, date) {
@@ -152,7 +154,8 @@ export default function App() {
               : todo
           )
         )
-      );
+      )
+      .then(() => setRerender(!rerender));
   }
 
   function handleChangeTime(id, time) {
@@ -177,7 +180,8 @@ export default function App() {
               : todo
           )
         )
-      );
+      )
+      .then(() => setRerender(!rerender));
   }
 
   function handleChangePriority(id, priority) {
@@ -202,7 +206,8 @@ export default function App() {
               : todo
           )
         )
-      );
+      )
+      .then(() => setRerender(!rerender));
   }
 
   function handleChangeCompleted(id, completed) {
@@ -227,7 +232,8 @@ export default function App() {
               : todo
           )
         )
-      );
+      )
+      .then(() => setRerender(!rerender));
   }
 
   function handleDeleteTodo(id) {
