@@ -16,11 +16,17 @@ export default function App() {
   const [todos, setTodos] = useState([]);
   const [categories, setCategories] = useState([]);
   const [newDescription, setNewDescription] = useState('');
-  const [newCategory, setNewCategory] = useState('');
-  const [newPriority, setNewPriority] = useState('');
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const [newCategory, setNewCategory] = useState('');
+  const [newPriority, setNewPriority] = useState('');
+  const [sortedBy, setSortedBy] = useState('');
+  const [sortedByDescription, setSortedByDescription] = useState(false);
+  const [sortedByDate, setSortedByDate] = useState(false);
+  const [sortedByTime, setSortedByTime] = useState(false);
+  const [sortedByCategory, setSortedByCategory] = useState(false);
+  const [sortedByPriority, setSortedByPriority] = useState(false);
+  const [sortedByCompleted, setSortedByCompleted] = useState(false);
   const [mode, setMode] = useState('light');
   const [rerender, setRerender] = useState(false);
   const textboxStyle =
@@ -60,12 +66,12 @@ export default function App() {
       },
       body: JSON.stringify({
         description: newDescription,
-        priority: newPriority,
         date_due: newDate,
         time_due: newTime,
-        completed: false,
         category_id: null,
         category_name: newCategory,
+        priority: newPriority,
+        completed: false,
       }),
     })
       .then((r) => r.json())
@@ -241,7 +247,8 @@ export default function App() {
       method: 'DELETE',
     })
       .then((r) => r.json())
-      .then((d) => setTodos(todos.filter((todo) => todo.id !== d.id)));
+      .then((d) => setTodos(todos.filter((todo) => todo.id !== d.id)))
+      .then(() => setRerender(!rerender));
   }
 
   return (
@@ -327,64 +334,100 @@ export default function App() {
             size="sm"
             onClick={(e) => {
               handleCreateTodo(e);
+              window.scrollTo(0, 0);
             }}
           >
             Submit
           </Button>
           <Dropdown>
             <Dropdown.Toggle variant="secondary" size="sm" id="dropdown-basic">
-              {sortBy || 'Sort by'}
+              {sortedBy || 'Sort by'}
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              {[
-                'description',
-                'category_name',
-                'date_due',
-                'time_due',
-                'completed',
-              ].map((toSortBy) => (
-                <Dropdown.Item
-                  key={toSortBy}
-                  onClick={() => {
-                    setTodos(
-                      todos.sort((a, b) => {
-                        if (a[toSortBy] < b[toSortBy]) {
-                          return -1;
-                        }
-                        if (a[toSortBy] > b[toSortBy]) {
-                          return 1;
-                        }
-                        return 0;
-                      })
-                    );
-                    setSortBy(
-                      toSortBy === 'description'
-                        ? 'Description'
-                        : toSortBy === 'category_name'
-                        ? 'Category'
-                        : toSortBy === 'date_due'
-                        ? 'Date'
-                        : toSortBy === 'time_due'
-                        ? 'Time'
-                        : toSortBy === 'completed'
-                        ? 'Completed'
-                        : ''
-                    );
-                  }}
-                >
-                  {toSortBy === 'description'
-                    ? 'Description'
-                    : toSortBy === 'category_name'
-                    ? 'Category'
-                    : toSortBy === 'date_due'
-                    ? 'Date'
-                    : toSortBy === 'time_due'
-                    ? 'Time'
-                    : toSortBy === 'completed'
-                    ? 'Completed'
-                    : ''}
-                </Dropdown.Item>
-              ))}
+              <Dropdown.Item
+                onClick={() => {
+                  setTodos(
+                    todos.sort((a, b) => {
+                      if (a['description'] < b['description']) {
+                        return -1;
+                      }
+                      if (a['description'] > b['description']) {
+                        return 1;
+                      }
+                      return 0;
+                    })
+                  );
+                  setSortedBy('Description');
+                  setSortedByDescription(!sortedByDescription);
+                  sortedByDescription
+                    ? setTodos(todos.reverse())
+                    : setTodos(todos);
+                }}
+              >
+                Description
+              </Dropdown.Item>
+              <Dropdown.Item
+                onClick={() => {
+                  setTodos(
+                    todos.sort((a, b) => {
+                      if (a['date_due'] < b['date_due']) {
+                        return -1;
+                      }
+                      if (a['date_due'] > b['date_due']) {
+                        return 1;
+                      }
+                      return 0;
+                    })
+                  );
+                  setSortedBy('Date');
+                  setSortedByDate(!sortedByDate);
+                  sortedByDate ? setTodos(todos.reverse()) : setTodos(todos);
+                }}
+              >
+                Date
+              </Dropdown.Item>
+              <Dropdown.Item
+                onClick={() => {
+                  setTodos(
+                    todos.sort((a, b) => {
+                      if (a['time_due'] < b['time_due']) {
+                        return -1;
+                      }
+                      if (a['time_due'] > b['time_due']) {
+                        return 1;
+                      }
+                      return 0;
+                    })
+                  );
+                  setSortedBy('Time');
+                  setSortedByTime(!sortedByTime);
+                  sortedByTime ? setTodos(todos.reverse()) : setTodos(todos);
+                }}
+              >
+                Time
+              </Dropdown.Item>
+              <Dropdown.Item
+                onClick={() => {
+                  setTodos(
+                    todos.sort((a, b) => {
+                      if (a['category_name'] < b['category_name']) {
+                        return -1;
+                      }
+                      if (a['category_name'] > b['category_name']) {
+                        return 1;
+                      }
+                      return 0;
+                    })
+                  );
+                  setSortedBy('Category');
+                  setSortedByCategory(!sortedByCategory);
+                  sortedByCategory
+                    ? setTodos(todos.reverse())
+                    : setTodos(todos);
+                }}
+              >
+                Category
+              </Dropdown.Item>
               <Dropdown.Item
                 onClick={() => {
                   setTodos(
@@ -410,18 +453,36 @@ export default function App() {
                       return 0;
                     })
                   );
-                  setSortBy('Priority');
+                  setSortedBy('Priority');
+                  setSortedByPriority(!sortedByPriority);
+                  sortedByPriority
+                    ? setTodos(todos.reverse())
+                    : setTodos(todos);
                 }}
               >
                 Priority
               </Dropdown.Item>
               <Dropdown.Item
                 onClick={() => {
-                  setTodos(todos.reverse());
-                  setSortBy('REVERSE');
+                  setTodos(
+                    todos.sort((a, b) => {
+                      if (a['completed'] < b['completed']) {
+                        return -1;
+                      }
+                      if (a['completed'] > b['completed']) {
+                        return 1;
+                      }
+                      return 0;
+                    })
+                  );
+                  setSortedBy('Completed');
+                  setSortedByCompleted(!sortedByCompleted);
+                  sortedByCompleted
+                    ? setTodos(todos.reverse())
+                    : setTodos(todos);
                 }}
               >
-                REVERSE
+                Completed
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
