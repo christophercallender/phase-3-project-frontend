@@ -20,13 +20,13 @@ export default function App() {
   const [newTime, setNewTime] = useState('');
   const [newCategory, setNewCategory] = useState('');
   const [newPriority, setNewPriority] = useState('');
-  const [sortedBy, setSortedBy] = useState('');
-  const [sortedByDescription, setSortedByDescription] = useState(false);
-  const [sortedByDate, setSortedByDate] = useState(false);
-  const [sortedByTime, setSortedByTime] = useState(false);
-  const [sortedByCategory, setSortedByCategory] = useState(false);
-  const [sortedByPriority, setSortedByPriority] = useState(false);
-  const [sortedByCompleted, setSortedByCompleted] = useState(false);
+  const [sortSelected, setSortSelected] = useState('');
+  const [sortedByDescription, setSortedByDescription] = useState(true);
+  const [sortedByDate, setSortedByDate] = useState(true);
+  const [sortedByTime, setSortedByTime] = useState(true);
+  const [sortedByCategory, setSortedByCategory] = useState(true);
+  const [sortedByPriority, setSortedByPriority] = useState(true);
+  const [sortedByCompleted, setSortedByCompleted] = useState(true);
   const [mode, setMode] = useState('light');
   const [rerender, setRerender] = useState(false);
   const textboxStyle =
@@ -57,7 +57,7 @@ export default function App() {
       );
   }, [rerender]);
 
-  function handleCreateTodo(e) {
+  function handleCreate(e) {
     e.preventDefault();
     fetch('http://localhost:9292/todos', {
       method: 'POST',
@@ -86,163 +86,22 @@ export default function App() {
       });
   }
 
-  function handleChangeDescription(id, description) {
+  function handleUpdate(id, attr, value) {
     fetch(`http://localhost:9292/todos/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        description: description,
+        [attr]: value,
       }),
     })
       .then((r) => r.json())
-      .then((d) =>
-        setTodos(
-          todos.map((todo) =>
-            todo.id === d.id
-              ? {
-                  ...todo,
-                  description: d.description,
-                }
-              : todo
-          )
-        )
-      )
+      .then((d) => setTodos(todos.map((todo) => (todo.id === d.id ? d : todo))))
       .then(() => setRerender(!rerender));
   }
 
-  function handleChangeCategory(id, category) {
-    fetch(`http://localhost:9292/todos/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        category_name: category,
-      }),
-    })
-      .then((r) => r.json())
-      .then((d) =>
-        setTodos(
-          todos.map((todo) =>
-            todo.id === d.id
-              ? {
-                  ...todo,
-                  category_name: d.category_name,
-                }
-              : todo
-          )
-        )
-      )
-      .then(() => setRerender(!rerender));
-  }
-
-  function handleChangeDate(id, date) {
-    fetch(`http://localhost:9292/todos/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        date_due: date,
-      }),
-    })
-      .then((r) => r.json())
-      .then((d) =>
-        setTodos(
-          todos.map((todo) =>
-            todo.id === d.id
-              ? {
-                  ...todo,
-                  date_due: d.date_due,
-                }
-              : todo
-          )
-        )
-      )
-      .then(() => setRerender(!rerender));
-  }
-
-  function handleChangeTime(id, time) {
-    fetch(`http://localhost:9292/todos/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        time_due: time,
-      }),
-    })
-      .then((r) => r.json())
-      .then((d) =>
-        setTodos(
-          todos.map((todo) =>
-            todo.id === d.id
-              ? {
-                  ...todo,
-                  time_due: d.time_due,
-                }
-              : todo
-          )
-        )
-      )
-      .then(() => setRerender(!rerender));
-  }
-
-  function handleChangePriority(id, priority) {
-    fetch(`http://localhost:9292/todos/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        priority: priority,
-      }),
-    })
-      .then((r) => r.json())
-      .then((d) =>
-        setTodos(
-          todos.map((todo) =>
-            todo.id === d.id
-              ? {
-                  ...todo,
-                  priority: d.priority,
-                }
-              : todo
-          )
-        )
-      )
-      .then(() => setRerender(!rerender));
-  }
-
-  function handleChangeCompleted(id, completed) {
-    fetch(`http://localhost:9292/todos/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        completed: !completed,
-      }),
-    })
-      .then((r) => r.json())
-      .then((d) =>
-        setTodos(
-          todos.map((todo) =>
-            todo.id === d.id
-              ? {
-                  ...todo,
-                  completed: d.completed,
-                }
-              : todo
-          )
-        )
-      )
-      .then(() => setRerender(!rerender));
-  }
-
-  function handleDeleteTodo(id) {
+  function handleDelete(id) {
     fetch(`http://localhost:9292/todos/${id}`, {
       method: 'DELETE',
     })
@@ -278,9 +137,15 @@ export default function App() {
             onChange={(e) =>
               setNewDescription(
                 e.target.value
-                  .split('.')
+                  .split('. ')
                   .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join('.')
+                  .join('. ')
+                  .split('! ')
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join('! ')
+                  .split('? ')
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join('? ')
               )
             }
           />
@@ -333,7 +198,7 @@ export default function App() {
             variant="secondary"
             size="sm"
             onClick={(e) => {
-              handleCreateTodo(e);
+              handleCreate(e);
               window.scrollTo(0, 0);
             }}
           >
@@ -341,149 +206,70 @@ export default function App() {
           </Button>
           <Dropdown>
             <Dropdown.Toggle variant="secondary" size="sm" id="dropdown-basic">
-              {sortedBy || 'Sort by'}
+              {sortSelected || 'Sort by'}
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item
-                onClick={() => {
-                  setTodos(
-                    todos.sort((a, b) => {
-                      if (a['description'] < b['description']) {
-                        return -1;
-                      }
-                      if (a['description'] > b['description']) {
-                        return 1;
-                      }
-                      return 0;
-                    })
-                  );
-                  setSortedBy('Description');
-                  setSortedByDescription(!sortedByDescription);
-                  sortedByDescription
-                    ? setTodos(todos.reverse())
-                    : setTodos(todos);
-                }}
-              >
-                Description
-              </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => {
-                  setTodos(
-                    todos.sort((a, b) => {
-                      if (a['date_due'] < b['date_due']) {
-                        return -1;
-                      }
-                      if (a['date_due'] > b['date_due']) {
-                        return 1;
-                      }
-                      return 0;
-                    })
-                  );
-                  setSortedBy('Date');
-                  setSortedByDate(!sortedByDate);
-                  sortedByDate ? setTodos(todos.reverse()) : setTodos(todos);
-                }}
-              >
-                Date
-              </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => {
-                  setTodos(
-                    todos.sort((a, b) => {
-                      if (a['time_due'] < b['time_due']) {
-                        return -1;
-                      }
-                      if (a['time_due'] > b['time_due']) {
-                        return 1;
-                      }
-                      return 0;
-                    })
-                  );
-                  setSortedBy('Time');
-                  setSortedByTime(!sortedByTime);
-                  sortedByTime ? setTodos(todos.reverse()) : setTodos(todos);
-                }}
-              >
-                Time
-              </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => {
-                  setTodos(
-                    todos.sort((a, b) => {
-                      if (a['category_name'] < b['category_name']) {
-                        return -1;
-                      }
-                      if (a['category_name'] > b['category_name']) {
-                        return 1;
-                      }
-                      return 0;
-                    })
-                  );
-                  setSortedBy('Category');
-                  setSortedByCategory(!sortedByCategory);
-                  sortedByCategory
-                    ? setTodos(todos.reverse())
-                    : setTodos(todos);
-                }}
-              >
-                Category
-              </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => {
-                  setTodos(
-                    todos.sort((a, b) => {
-                      if (a.priority === 'High' && b.priority === 'Medium') {
-                        return -1;
-                      }
-                      if (a.priority === 'Medium' && b.priority === 'High') {
-                        return 1;
-                      }
-                      if (a.priority === 'High' && b.priority === 'Low') {
-                        return -1;
-                      }
-                      if (a.priority === 'Low' && b.priority === 'High') {
-                        return 1;
-                      }
-                      if (a.priority === 'Medium' && b.priority === 'Low') {
-                        return -1;
-                      }
-                      if (a.priority === 'Low' && b.priority === 'Medium') {
-                        return 1;
-                      }
-                      return 0;
-                    })
-                  );
-                  setSortedBy('Priority');
-                  setSortedByPriority(!sortedByPriority);
-                  sortedByPriority
-                    ? setTodos(todos.reverse())
-                    : setTodos(todos);
-                }}
-              >
-                Priority
-              </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => {
-                  setTodos(
-                    todos.sort((a, b) => {
-                      if (a['completed'] < b['completed']) {
-                        return -1;
-                      }
-                      if (a['completed'] > b['completed']) {
-                        return 1;
-                      }
-                      return 0;
-                    })
-                  );
-                  setSortedBy('Completed');
-                  setSortedByCompleted(!sortedByCompleted);
-                  sortedByCompleted
-                    ? setTodos(todos.reverse())
-                    : setTodos(todos);
-                }}
-              >
-                Completed
-              </Dropdown.Item>
+              {[
+                [
+                  'description',
+                  'Description',
+                  sortedByDescription,
+                  setSortedByDescription,
+                ],
+                ['date_due', 'Date', sortedByDate, setSortedByDate],
+                ['time_due', 'Time', sortedByTime, setSortedByTime],
+                [
+                  'category_name',
+                  'Category',
+                  sortedByCategory,
+                  setSortedByCategory,
+                ],
+                ['priority', 'Priority', sortedByPriority, setSortedByPriority],
+                [
+                  'completed',
+                  'Completed',
+                  sortedByCompleted,
+                  setSortedByCompleted,
+                ],
+              ].map(([key, label, sortedBy, setSortedBy]) => (
+                <Dropdown.Item
+                  key={key}
+                  onClick={() => {
+                    setTodos(
+                      todos.sort((a, b) => {
+                        if (key === 'priority') {
+                          if (a[key] === 'High') {
+                            return 1;
+                          }
+                          if (b[key] === 'High') {
+                            return -1;
+                          }
+                          if (a[key] === 'Medium') {
+                            return 1;
+                          }
+                          if (b[key] === 'Medium') {
+                            return -1;
+                          }
+                          if (a[key] === 'Low') {
+                            return 1;
+                          }
+                          if (b[key] === 'Low') {
+                            return -1;
+                          }
+                          return 0;
+                        } else {
+                          return a[key] < b[key] ? 1 : -1;
+                        }
+                      })
+                    );
+                    setSortSelected(label);
+                    setSortedBy(!sortedBy);
+                    sortedBy ? setTodos(todos.reverse()) : setTodos(todos);
+                  }}
+                >
+                  {label}
+                </Dropdown.Item>
+              ))}
             </Dropdown.Menu>
           </Dropdown>
           <button
@@ -539,9 +325,24 @@ export default function App() {
                   <Col align="left">
                     <textarea
                       style={textboxStyle}
-                      defaultValue={todo.description}
+                      value={todo.description
+                        .split('. ')
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join('. ')
+                        .split('! ')
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join('! ')
+                        .split('? ')
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join('? ')}
                       onChange={(e) =>
-                        handleChangeDescription(todo.id, e.target.value)
+                        handleUpdate(todo.id, 'description', e.target.value)
                       }
                     />
                   </Col>
@@ -551,7 +352,7 @@ export default function App() {
                       type="date"
                       defaultValue={todo.date_due}
                       onChange={(e) =>
-                        handleChangeDate(todo.id, e.target.value)
+                        handleUpdate(todo.id, 'date_due', e.target.value)
                       }
                     />
                   </Col>
@@ -561,7 +362,7 @@ export default function App() {
                       type="time"
                       defaultValue={todo.time_due.substring(11, 16)}
                       onChange={(e) =>
-                        handleChangeTime(todo.id, e.target.value)
+                        handleUpdate(todo.id, 'time_due', e.target.value)
                       }
                     />
                   </Col>
@@ -578,9 +379,13 @@ export default function App() {
                         {categories.map((category) => (
                           <Dropdown.Item
                             key={category.id}
-                            onClick={() => {
-                              handleChangeCategory(todo.id, category.name);
-                            }}
+                            onClick={() =>
+                              handleUpdate(
+                                todo.id,
+                                'category_name',
+                                category.name
+                              )
+                            }
                           >
                             {category.name}
                           </Dropdown.Item>
@@ -608,7 +413,7 @@ export default function App() {
                           <Dropdown.Item
                             key={priority}
                             onClick={() => {
-                              handleChangePriority(todo.id, priority);
+                              handleUpdate(todo.id, 'priority', priority);
                             }}
                           >
                             {priority}
@@ -622,7 +427,7 @@ export default function App() {
                       variant="none"
                       style={{ cursor: 'pointer' }}
                       onClick={() => {
-                        handleChangeCompleted(todo.id, todo.completed);
+                        handleUpdate(todo.id, 'completed', !todo.completed);
                       }}
                     >
                       {todo.completed
@@ -637,7 +442,7 @@ export default function App() {
                       variant="none"
                       style={{ cursor: 'pointer' }}
                       onClick={() => {
-                        handleDeleteTodo(todo.id);
+                        handleDelete(todo.id);
                       }}
                     >
                       🗑️
