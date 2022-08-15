@@ -87,7 +87,12 @@ export default function App() {
   }
 
   function handleUpdate(id, attr, value) {
-    fetch(`http://localhost:9292/todos/${id}`, {
+    let fetchURL = null;
+    attr === 'category_name'
+      ? (fetchURL = `http://localhost:9292/todos/${id}/category`)
+      : (fetchURL = `http://localhost:9292/todos/${id}`);
+
+    fetch(fetchURL, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -325,47 +330,27 @@ export default function App() {
                   <Col align="left">
                     <textarea
                       style={textboxStyle}
-                      defaultValue={todo.description
-                        .split('. ')
-                        .map(
-                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                        )
-                        .join('. ')
-                        .split('! ')
-                        .map(
-                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                        )
-                        .join('! ')
-                        .split('? ')
-                        .map(
-                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                        )
-                        .join('? ')}
+                      defaultValue={todo.description}
                       onBlur={(e) =>
                         handleUpdate(todo.id, 'description', e.target.value)
                       }
                     />
                   </Col>
-                  <Col align="right">
-                    <input
-                      style={textboxStyle}
-                      type="date"
-                      defaultValue={todo.date_due}
-                      onBlur={(e) =>
-                        handleUpdate(todo.id, 'date_due', e.target.value)
-                      }
-                    />
-                  </Col>
-                  <Col align="right">
-                    <input
-                      style={textboxStyle}
-                      type="time"
-                      defaultValue={todo.time_due.substring(11, 16)}
-                      onBlur={(e) =>
-                        handleUpdate(todo.id, 'time_due', e.target.value)
-                      }
-                    />
-                  </Col>
+                  {[
+                    ['date', todo.date_due, 'date_due'],
+                    ['time', todo.time_due.substring(11, 16), 'time_due'],
+                  ].map(([type, todo_attr, attr]) => (
+                    <Col key={type} align="left">
+                      <input
+                        type={type}
+                        style={textboxStyle}
+                        defaultValue={todo_attr}
+                        onBlur={(e) =>
+                          handleUpdate(todo.id, attr, e.target.value)
+                        }
+                      />
+                    </Col>
+                  ))}
                   <Col align="right">
                     <Dropdown>
                       <Dropdown.Toggle
