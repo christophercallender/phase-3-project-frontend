@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Navbar,
-  Container,
-  Card,
-  Col,
-  Row,
-  Dropdown,
-  Button,
-} from 'react-bootstrap';
+import { Navbar, Container, Dropdown, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import buttondark from './media/buttondark.png';
 import buttonlight from './media/buttonlight.png';
+import Cards from './Cards.js';
 
 export default function App() {
   const [todos, setTodos] = useState([]);
@@ -242,29 +235,23 @@ export default function App() {
                   onClick={() => {
                     setTodos(
                       todos.sort((a, b) => {
-                        if (key === 'priority') {
-                          if (a[key] === 'High') {
-                            return 1;
-                          }
-                          if (b[key] === 'High') {
-                            return -1;
-                          }
-                          if (a[key] === 'Medium') {
-                            return 1;
-                          }
-                          if (b[key] === 'Medium') {
-                            return -1;
-                          }
-                          if (a[key] === 'Low') {
-                            return 1;
-                          }
-                          if (b[key] === 'Low') {
-                            return -1;
-                          }
-                          return 0;
-                        } else {
-                          return a[key] < b[key] ? 1 : -1;
-                        }
+                        return key === 'priority'
+                          ? a[key] === 'High'
+                            ? 1
+                            : b[key] === 'High'
+                            ? -1
+                            : a[key] === 'Medium'
+                            ? 1
+                            : b[key] === 'Medium'
+                            ? -1
+                            : a[key] === 'Low'
+                            ? 1
+                            : b[key] === 'Low'
+                            ? -1
+                            : 0
+                          : a[key] < b[key]
+                          ? 1
+                          : -1;
                       })
                     );
                     setSortSelected(label);
@@ -278,10 +265,10 @@ export default function App() {
             </Dropdown.Menu>
           </Dropdown>
           <Button
-            variant="none"
+            variant="dark"
             style={{
-              border: 'none',
-              background: 'none',
+              // border: 'none',
+              // background: 'none',
               cursor: 'pointer',
             }}
             onClick={() => setMode(mode === 'light' ? 'dark' : 'light')}
@@ -294,159 +281,14 @@ export default function App() {
           </Button>
         </Container>
       </Navbar>
-
-      {todos.length > 0
-        ? todos.map((todo) => (
-            <Card
-              key={todo.id}
-              bg={mode === 'light' ? 'light' : 'dark'}
-              expand="sm-md-lg"
-              className="d-flex justify-content-between"
-              style={{
-                color: 'black',
-                width: '66%',
-                marginTop: '15px',
-                marginLeft: 'auto',
-                marginRight: 'auto',
-                boxShadow:
-                  '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2)',
-              }}
-            >
-              <Container
-                fluid
-                style={{
-                  color: 'black',
-                  paddingTop: '15px',
-                  paddingLeft: '15px',
-                  paddingRight: '15px',
-                  paddingBottom: '15px',
-                }}
-              >
-                <Row
-                  style={{
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                  }}
-                >
-                  <Col align="left">
-                    <textarea
-                      style={textboxStyle}
-                      defaultValue={todo.description}
-                      onBlur={(e) =>
-                        handleUpdate(todo.id, 'description', e.target.value)
-                      }
-                    />
-                  </Col>
-                  {[
-                    ['date', todo.date_due, 'date_due'],
-                    ['time', todo.time_due.substring(11, 16), 'time_due'],
-                  ].map(([type, todo_attr, attr]) => (
-                    <Col key={type} align="left">
-                      <input
-                        type={type}
-                        style={textboxStyle}
-                        defaultValue={todo_attr}
-                        onBlur={(e) =>
-                          handleUpdate(todo.id, attr, e.target.value)
-                        }
-                      />
-                    </Col>
-                  ))}
-                  <Col align="right">
-                    <Dropdown>
-                      <Dropdown.Toggle
-                        variant="secondary"
-                        size="sm"
-                        id="dropdown-basic"
-                      >
-                        {todo.category_name}
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        {categories.map((category) => (
-                          <Dropdown.Item
-                            key={category.id}
-                            onClick={() =>
-                              handleUpdate(
-                                todo.id,
-                                'category_name',
-                                category.name
-                              )
-                            }
-                          >
-                            {category.name}
-                          </Dropdown.Item>
-                        ))}
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </Col>
-                  <Col align="right">
-                    <Dropdown>
-                      <Dropdown.Toggle
-                        variant={
-                          todo.priority === 'Low'
-                            ? 'primary'
-                            : todo.priority === 'Medium'
-                            ? 'warning'
-                            : 'danger'
-                        }
-                        size="sm"
-                        id="dropdown-basic"
-                      >
-                        {todo.priority}
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        {['High', 'Medium', 'Low'].map((priority) => (
-                          <Dropdown.Item
-                            key={priority}
-                            onClick={() => {
-                              handleUpdate(todo.id, 'priority', priority);
-                            }}
-                          >
-                            {priority}
-                          </Dropdown.Item>
-                        ))}
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </Col>
-                  <Col align="right">
-                    <Button
-                      variant="none"
-                      style={{
-                        border: 'none',
-                        background: 'none',
-                        cursor: 'pointer',
-                      }}
-                      onClick={() => {
-                        handleUpdate(todo.id, 'completed', !todo.completed);
-                      }}
-                    >
-                      {todo.completed
-                        ? '✅ '
-                        : mode === 'light'
-                        ? '🔲 '
-                        : '🔳 '}
-                    </Button>
-                  </Col>
-                  <Col align="right">
-                    <Button
-                      variant="none"
-                      style={{
-                        border: 'none',
-                        background: 'none',
-                        cursor: 'pointer',
-                      }}
-                      onClick={() => {
-                        handleDelete(todo.id);
-                      }}
-                    >
-                      🗑️
-                    </Button>
-                  </Col>
-                </Row>
-              </Container>
-            </Card>
-          ))
-        : null}
+      <Cards
+        todos={todos}
+        categories={categories}
+        handleUpdate={handleUpdate}
+        handleDelete={handleDelete}
+        textboxStyle={textboxStyle}
+        mode={mode}
+      />
 
       <Navbar
         bg="dark"
