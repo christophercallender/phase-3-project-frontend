@@ -325,7 +325,7 @@ export default function App() {
                   <Col align="left">
                     <textarea
                       style={textboxStyle}
-                      value={todo.description
+                      defaultValue={todo.description
                         .split('. ')
                         .map(
                           (word) => word.charAt(0).toUpperCase() + word.slice(1)
@@ -341,7 +341,7 @@ export default function App() {
                           (word) => word.charAt(0).toUpperCase() + word.slice(1)
                         )
                         .join('? ')}
-                      onChange={(e) =>
+                      onBlur={(e) =>
                         handleUpdate(todo.id, 'description', e.target.value)
                       }
                     />
@@ -351,7 +351,7 @@ export default function App() {
                       style={textboxStyle}
                       type="date"
                       defaultValue={todo.date_due}
-                      onChange={(e) =>
+                      onBlur={(e) =>
                         handleUpdate(todo.id, 'date_due', e.target.value)
                       }
                     />
@@ -361,7 +361,7 @@ export default function App() {
                       style={textboxStyle}
                       type="time"
                       defaultValue={todo.time_due.substring(11, 16)}
-                      onChange={(e) =>
+                      onBlur={(e) =>
                         handleUpdate(todo.id, 'time_due', e.target.value)
                       }
                     />
