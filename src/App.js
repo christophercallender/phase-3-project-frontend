@@ -277,7 +277,8 @@ export default function App() {
               ))}
             </Dropdown.Menu>
           </Dropdown>
-          <button
+          <Button
+            variant="none"
             style={{
               border: 'none',
               background: 'none',
@@ -290,7 +291,7 @@ export default function App() {
               width={20}
               alt={'darkmode button'}
             />
-          </button>
+          </Button>
         </Container>
       </Navbar>
 
@@ -410,7 +411,11 @@ export default function App() {
                   <Col align="right">
                     <Button
                       variant="none"
-                      style={{ cursor: 'pointer' }}
+                      style={{
+                        border: 'none',
+                        background: 'none',
+                        cursor: 'pointer',
+                      }}
                       onClick={() => {
                         handleUpdate(todo.id, 'completed', !todo.completed);
                       }}
@@ -425,7 +430,11 @@ export default function App() {
                   <Col align="right">
                     <Button
                       variant="none"
-                      style={{ cursor: 'pointer' }}
+                      style={{
+                        border: 'none',
+                        background: 'none',
+                        cursor: 'pointer',
+                      }}
                       onClick={() => {
                         handleDelete(todo.id);
                       }}
