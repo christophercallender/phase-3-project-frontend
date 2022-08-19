@@ -196,8 +196,9 @@ export default function App() {
             variant="secondary"
             size="sm"
             onClick={(e) => {
-              handleCreate(e);
-              window.scrollTo(0, 0);
+              newDescription && newDate && newTime && newCategory && newPriority
+                ? handleCreate(e) && window.scrollTo(0, 0)
+                : alert('Please fill out all fields!');
             }}
           >
             Submit
@@ -281,6 +282,7 @@ export default function App() {
           </Button>
         </Container>
       </Navbar>
+
       <Cards
         todos={todos}
         categories={categories}

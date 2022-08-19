@@ -52,9 +52,9 @@ export default function Cards({
                 />
               </Col>
               {[
-                ['date', todo.date_due, 'date_due'],
-                ['time', todo.time_due.substring(11, 16), 'time_due'],
-              ].map(([type, todo_attr, attr]) => (
+                ['date', 'date_due', todo.date_due],
+                ['time', 'time_due', todo.time_due.substring(11, 16)],
+              ].map(([type, attr, todo_attr]) => (
                 <Col key={type} align="left">
                   <input
                     type={type}
