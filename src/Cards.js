@@ -116,36 +116,31 @@ export default function Cards({
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
-              <Col align="right">
-                <Button
-                  variant={mode === 'light' ? 'light' : 'dark'}
-                  style={{
-                    // border: 'none',
-                    // background: 'none',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => {
-                    handleUpdate(todo.id, 'completed', !todo.completed);
-                  }}
-                >
-                  {todo.completed ? '✅ ' : mode === 'light' ? '🔲 ' : '🔳 '}
-                </Button>
-              </Col>
-              <Col align="right">
-                <Button
-                  variant={mode === 'light' ? 'light' : 'dark'}
-                  style={{
-                    // border: 'none',
-                    // background: 'none',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => {
-                    handleDelete(todo.id);
-                  }}
-                >
-                  🗑️
-                </Button>
-              </Col>
+              {[
+                [
+                  todo.completed ? '✅ ' : mode === 'light' ? '🔲 ' : '🔳 ',
+                  'update',
+                ],
+                ['🗑️', 'delete'],
+              ].map(([text, handle]) => (
+                <Col key={text} align="right">
+                  <Button
+                    variant={'none'}
+                    style={{
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                      handle === 'update'
+                        ? handleUpdate(todo.id, 'completed', !todo.completed)
+                        : handleDelete(todo.id);
+                    }}
+                  >
+                    {text}
+                  </Button>
+                </Col>
+              ))}
             </Row>
           </Container>
         </Card>

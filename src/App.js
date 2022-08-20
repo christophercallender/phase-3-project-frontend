@@ -84,7 +84,6 @@ export default function App() {
     attr === 'category_name'
       ? (fetchURL = `http://localhost:9292/todos/${id}/category`)
       : (fetchURL = `http://localhost:9292/todos/${id}`);
-
     fetch(fetchURL, {
       method: 'PATCH',
       headers: {
@@ -127,54 +126,65 @@ export default function App() {
           style={{ color: 'white', marginRight: '10px', marginLeft: '10px' }}
         >
           <h3>Todo List Pro</h3>
-          <input
-            type="text"
-            style={textboxStyle}
-            placeholder="Enter a new todo"
-            value={newDescription}
-            onChange={(e) =>
-              setNewDescription(
-                e.target.value
-                  .split('. ')
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join('. ')
-                  .split('! ')
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join('! ')
-                  .split('? ')
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join('? ')
-              )
-            }
-          />
-          <input
-            type="date"
-            style={textboxStyle}
-            placeholder=""
-            value={newDate}
-            onChange={(e) => setNewDate(e.target.value)}
-          />
-          <input
-            type="time"
-            style={textboxStyle}
-            placeholder=""
-            value={newTime}
-            onChange={(e) => setNewTime(e.target.value)}
-          />
-          <input
-            type="text"
-            style={textboxStyle}
-            placeholder="Enter a category"
-            value={newCategory}
-            onChange={(e) =>
-              setNewCategory(
-                e.target.value
-                  .split(' ')
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(' ')
-              )
-            }
-          />
+          {[
+            [
+              'text',
+              'Enter a new todo',
+              newDescription,
+              setNewDescription,
+              'description',
+            ],
+            ['date', '', newDate, setNewDate, 'date_due'],
+            ['time', '', newTime, setNewTime, 'time_due'],
+            [
+              'text',
+              'Enter a category',
+              newCategory,
+              setNewCategory,
+              'category_name',
+            ],
+          ].map(([type, placeholder, value, setValue, targetValue]) => (
+            <input
+              key={targetValue}
+              type={type}
+              style={textboxStyle}
+              placeholder={placeholder}
+              value={value}
+              onChange={(e) =>
+                setValue(
+                  targetValue === 'description'
+                    ? e.target.value
+                        .split('. ')
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join('. ')
+                        .split('! ')
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join('! ')
+                        .split('? ')
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join('? ')
+                    : targetValue === 'date_due'
+                    ? e.target.value
+                    : targetValue === 'time_due'
+                    ? e.target.value
+                    : targetValue === 'category_name'
+                    ? e.target.value
+                        .split(' ')
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(' ')
+                    : e.target.value
+                )
+              }
+            />
+          ))}
           <Dropdown>
             <Dropdown.Toggle variant="secondary" size="sm" id="dropdown-basic">
               {newPriority || 'Priority'}
@@ -267,11 +277,7 @@ export default function App() {
           </Dropdown>
           <Button
             variant="dark"
-            style={{
-              // border: 'none',
-              // background: 'none',
-              cursor: 'pointer',
-            }}
+            style={{ cursor: 'pointer' }}
             onClick={() => setMode(mode === 'light' ? 'dark' : 'light')}
           >
             <img
